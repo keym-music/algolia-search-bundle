@@ -82,6 +82,7 @@ EOT
             }
 
             $sourceIndexName = $this->searchService->searchableAs($entityClassName);
+            $output->writeln("Source index name: <info>$sourceIndexName</info>");
 
             if ($shouldDoAtomicReindex) {
                 $temporaryIndexName = $this->searchServiceForAtomicReindex->searchableAs($entityClassName);
@@ -91,6 +92,7 @@ EOT
 
             $allResponses = [];
             foreach (is_subclass_of($entityClassName, Aggregator::class) ? $entityClassName::getEntities() : [$entityClassName] as $entityClass) {
+                $output->writeln('Indexing <info>' . $entityClass . '</info> entities');
                 $manager    = $this->managerRegistry->getManagerForClass($entityClass);
                 $repository = $manager->getRepository($entityClass);
 
@@ -102,6 +104,8 @@ EOT
                         $config['batchSize'],
                         $config['batchSize'] * $page
                     );
+
+                    $output->writeln("Entity count to export: <comment>" . count($entities) . "</comment>");
 
                     $response       = $indexingService->index($manager, $entities);
                     $allResponses[] = $response;
