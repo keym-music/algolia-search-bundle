@@ -73,8 +73,11 @@ EOT
         $config                = $this->searchService->getConfiguration();
         $indexingService       = ($shouldDoAtomicReindex ? $this->searchServiceForAtomicReindex : $this->searchService);
 
+        $output->writeln('<info>Importing entities into Algolia</info>');
+
         foreach ($entitiesToIndex as $entityClassName) {
             if (!$this->searchService->isSearchable($entityClassName)) {
+                $output->writeln("<warning>$entityClassName is not indexable. Skipping...</warning>");
                 continue;
             }
 
