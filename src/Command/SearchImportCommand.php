@@ -73,7 +73,9 @@ EOT
         $config                = $this->searchService->getConfiguration();
         $indexingService       = ($shouldDoAtomicReindex ? $this->searchServiceForAtomicReindex : $this->searchService);
 
-        $output->writeln('<info>Importing entities into Algolia</info>');
+        if ($output->isVerbose()) {
+            $output->writeln('<info>Importing entities into Algolia</info>');
+        }
 
         foreach ($entitiesToIndex as $entityClassName) {
             if (!$this->searchService->isSearchable($entityClassName)) {
@@ -82,7 +84,9 @@ EOT
             }
 
             $sourceIndexName = $this->searchService->searchableAs($entityClassName);
-            $output->writeln("Source index name: <info>$sourceIndexName</info>");
+            if ($output->isVerbose()) {
+                $output->writeln("Source index name: <info>$sourceIndexName</info>");
+            }
 
             if ($shouldDoAtomicReindex) {
                 $temporaryIndexName = $this->searchServiceForAtomicReindex->searchableAs($entityClassName);
@@ -92,7 +96,9 @@ EOT
 
             $allResponses = [];
             foreach (is_subclass_of($entityClassName, Aggregator::class) ? $entityClassName::getEntities() : [$entityClassName] as $entityClass) {
-                $output->writeln('Indexing <info>' . $entityClass . '</info> entities');
+                if ($output->isVerbose()) {
+                    $output->writeln('Indexing <info>' . $entityClass . '</info> entities');
+                }
                 $manager    = $this->managerRegistry->getManagerForClass($entityClass);
                 $repository = $manager->getRepository($entityClass);
 
@@ -105,11 +111,17 @@ EOT
                         $config['batchSize'] * $page
                     );
 
-                    $output->writeln("Entity count to export: <comment>" . count($entities) . "</comment>");
+                    if ($output->isVerbose()) {
+                        $output->writeln("Entity count to export: <comment>" . count($entities) . "</comment>");
+                    }
 
                     $response       = $indexingService->index($manager, $entities);
                     $allResponses[] = $response;
                     $responses      = $this->formatIndexingResponse($response);
+
+                    if (!count($responses)) {
+                        $output->writeln("<warning>No records to index for $entityClass</warning>");
+                    }
 
                     foreach ($responses as $indexName => $numberOfRecords) {
                         $output->writeln(sprintf(
