@@ -120,7 +120,7 @@ EOT
                     $responses      = $this->formatIndexingResponse($response);
 
                     if (!count($responses)) {
-                        $output->writeln("<warning>No records to index for $entityClass</warning>");
+                        $output->writeln("<comment>No records to index for $entityClass</comment>");
                     }
 
                     foreach ($responses as $indexName => $numberOfRecords) {
