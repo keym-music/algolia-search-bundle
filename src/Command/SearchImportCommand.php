@@ -79,7 +79,7 @@ EOT
 
         foreach ($entitiesToIndex as $entityClassName) {
             if (!$this->searchService->isSearchable($entityClassName)) {
-                $output->writeln("<warning>$entityClassName is not indexable. Skipping...</warning>");
+                $output->writeln("<comment>$entityClassName is not indexable. Skipping...</comment>");
                 continue;
             }
 
