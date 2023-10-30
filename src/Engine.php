@@ -91,7 +91,12 @@ final class Engine
 
         $data = [];
         foreach ($searchableEntities as $entity) {
-            $searchableArray = $entity->getSearchableArray();
+            try {
+                $searchableArray = $entity->getSearchableArray();
+            } catch (\Exception $e) {
+                $searchableArray = null;
+            }
+            
             if ($searchableArray === null || count($searchableArray) === 0) {
                 continue;
             }
